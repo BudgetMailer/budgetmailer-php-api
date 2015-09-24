@@ -1,0 +1,6 @@
+/cache/*
+!/cache/README.md
+/example/config.php
+/nbproject/
+/project/*
+/tests/phpunit.xml

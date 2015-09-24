@@ -1,0 +1,16 @@
+{   
+    "autoload": {
+        "psr-4": {
+            "BudgetMailer\\Api\\": "src/BudgetMailer/Api/"
+        }
+    },
+    "description": "Professio BudgetMailer API Client for PHP",
+    "homepage": "http://www.budgetmailer.nl/",
+    "keywords": ["php", "newsletter", "api", "client", "rest-json", "http"],
+    "license": "GPL2",
+    "name": "professio/php-budgetmailer",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "type": "library"
+}

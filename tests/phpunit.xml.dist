@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit
+backupGlobals="false"
+bootstrap="./autoload.php"
+colors="true"
+stopOnError="true"
+stopOnFailure="true"
+verbose="true">
+    <testsuites>
+        <testsuite name="budgetmailer">
+            <file>../src/BudgetMailer/Api/Test/ConfigTest.php</file>
+            <file>../src/BudgetMailer/Api/Test/CacheTest.php</file>
+            <file>../src/BudgetMailer/Api/Test/HttpTest.php</file>
+            <file>../src/BudgetMailer/Api/Test/RestJsonTest.php</file>
+            <file>../src/BudgetMailer/Api/Test/ClientTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

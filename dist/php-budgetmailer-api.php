@@ -1,4 +1,6 @@
 <?php
+# FILE: Client.php
+
 
 /**
  * BudgetMailer API REST-JSON Client Implementation Class
@@ -44,7 +46,21 @@ class Client
     const CACHE_KEY_LIST = 'bm-list-';
     const CONTENT_TYPE = 'application/json';
     const LIMIT = 1000;
+    
+    protected static $defaultConfig = array(
+        'cache' => false,
+        'cacheDir' => '',
+        'endPoint' => 'https://api.budgetmailer.com/',
+        'timeOutSocket' => 10,
+        'timeOutStream' => 10,
+        'ttl' => 3600,
+    );
 
+    /**
+     * @var Client singleton instance
+     */
+    protected static $instance;
+    
     /**
      * @var Cache Simple File Cache
      */
@@ -90,16 +106,39 @@ class Client
     {
         $this->setConfig($config);
         
-        if (!$cache) {
-            $cache = new Cache();
-        }
-        
         if (!$restJson) {
             $restJson = new RestJson($config);
         }
         
         $this->setCache($cache)
             ->setRestJson($restJson);
+    }
+    
+    /**
+     * Create new instance of the Client.
+     * @param array $configData
+     * @return Client
+     */
+    public static function getInstance(array $configData = array())
+    {
+        if (!self::$instance) {
+            if (!isset($configData['key']) || !isset($configData['list']) || !isset($configData['secret'])) {
+                throw new \BadMethodCallException('Config keys "key", "list", and "secret" must be set.');
+            }
+            
+            foreach(self::$defaultConfig as $k => $v) {
+                if (!isset($configData[$k])) {
+                    $configData[$k] = self::$defaultConfig[$k];
+                }
+            }
+
+            $config = new Config($configData);
+            $cache = new Cache($config);
+
+            self::$instance = new self($cache, $config);
+        }
+        
+        return self::$instance;
     }
     
     /**
@@ -548,6 +587,8 @@ class Client
 }
 
 
+# FILE: Config.php
+
 
 /**
  * BudgetMailer API Config Class File
@@ -672,6 +713,8 @@ class Config
 }
 
 
+# FILE: Cache.php
+
 
 /**
  * BudgetMailer File Cache
@@ -734,9 +777,12 @@ class Cache
      */
     public function __construct(Config $config)
     {
-        $this->setDir($config->getCacheDir());
         $this->setEnabled($config->getCache());
-        $this->setTtl($config->getTtl());
+        
+        if ($config->getEnabled()) {
+            $this->setDir($config->getCacheDir());
+            $this->setTtl($config->getTtl());
+        }
     }
     
     /**
@@ -973,6 +1019,8 @@ class Cache
     }
 }
 
+
+# FILE: Client/Http.php
 
 
 /**
@@ -1463,6 +1511,8 @@ class Http
     }
 }
 
+
+# FILE: Client/RestJson.php
 
 
 /**

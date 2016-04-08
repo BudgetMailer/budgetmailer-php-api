@@ -76,35 +76,41 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         );
     }
     
-    /*
-    public function testPostContact()
+    /**
+     * @expectedException BadMethodCallException
+     */
+    public function testStaticClientException()
     {
-        $contact = new \stdClass();
-        $contact->email = 'e' . rand(0,9999) . '@ma.il';
-        
-        $newContact = $this->client->postContact($contact);
-        
-        $this->assertTrue(is_object($newContact));
-        $this->assertTrue(isset($newContact->id) && !empty($newContact->id));
-        $this->assertTrue(isset($newContact->email) && $newContact->email == $contact->email);
-        $this->assertTrue(isset($newContact->list) && !empty($newContact->list));
+        Client::getInstance(array(
+            // missing required keys
+        ));
     }
     
-    public function testGetTags()
+    /**
+     * @depends testStaticClientException
+     */
+    public function testStaticClient()
     {
-        $tags = $this->client->getTags('e@ma.il');
+        $configData = array(
+            'key' => $this->config->getKey(),
+            'list' => $this->config->getList(),
+            'secret' => $this->config->getSecret(),
+        );
         
-        $this->assertTrue(is_array($tags));
+        $this->assertTrue(
+            self::CLS_CLIENT == get_class(Client::getInstance($configData))
+        );
     }
     
-    public function testDeleteContact()
+    /**
+     * @depends testStaticClient
+     */
+    public function testStaticClient2()
     {
-        $rs = $this->client->deleteContact('efwef323fsdfsd@ma.il');
-        $this->assertTrue(is_null($rs));
-        
-        $rs = $this->client->deleteContact('e81@ma.il');
-        $this->assertTrue($rs);
-    }*/
+        $this->assertTrue(
+            self::CLS_CLIENT == get_class(Client::getInstance()) // return existing instance
+        );
+    }
     
     /**
      * @depends testClient
@@ -306,5 +312,15 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         
         $this->assertTrue(is_array($newContacts));
         $this->assertTrue(count($newContacts) == 2);
+    }
+    
+    /**
+     * @depends testBulkPostContact
+     */
+    public function testCleanup()
+    {
+        // keep the test empty for future testing
+        $this->client->deleteContact(self::EMAIL);
+        $this->client->deleteContact(self::EMAIL2);
     }
 }

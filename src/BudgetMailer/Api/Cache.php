@@ -63,7 +63,7 @@ class Cache
     {
         $this->setEnabled($config->getCache());
         
-        if ($config->getEnabled()) {
+        if ($this->getEnabled()) {
             $this->setDir($config->getCacheDir());
             $this->setTtl($config->getTtl());
         }

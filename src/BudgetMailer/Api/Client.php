@@ -44,7 +44,21 @@ class Client
     const CACHE_KEY_LIST = 'bm-list-';
     const CONTENT_TYPE = 'application/json';
     const LIMIT = 1000;
+    
+    protected static $defaultConfig = array(
+        'cache' => false,
+        'cacheDir' => '',
+        'endPoint' => 'https://api.budgetmailer.com/',
+        'timeOutSocket' => 10,
+        'timeOutStream' => 10,
+        'ttl' => 3600,
+    );
 
+    /**
+     * @var Client singleton instance
+     */
+    protected static $instance;
+    
     /**
      * @var Cache Simple File Cache
      */
@@ -96,6 +110,33 @@ class Client
         
         $this->setCache($cache)
             ->setRestJson($restJson);
+    }
+    
+    /**
+     * Create new instance of the Client.
+     * @param array $configData
+     * @return Client
+     */
+    public static function getInstance(array $configData = array())
+    {
+        if (!self::$instance) {
+            if (!isset($configData['key']) || !isset($configData['list']) || !isset($configData['secret'])) {
+                throw new \BadMethodCallException('Config keys "key", "list", and "secret" must be set.');
+            }
+            
+            foreach(self::$defaultConfig as $k => $v) {
+                if (!isset($configData[$k])) {
+                    $configData[$k] = self::$defaultConfig[$k];
+                }
+            }
+
+            $config = new Config($configData);
+            $cache = new Cache($config);
+
+            self::$instance = new self($cache, $config);
+        }
+        
+        return self::$instance;
     }
     
     /**

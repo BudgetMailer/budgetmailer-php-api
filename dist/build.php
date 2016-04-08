@@ -28,7 +28,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$distRoot = realpath(__DIR__ . '/../dist') . '/';
+$distRoot = __DIR__ . '/';
 $srcRoot = realpath(__DIR__ . '/../src/BudgetMailer/Api') . '/';
 
 if (!is_dir($distRoot)) {
@@ -44,24 +44,20 @@ $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($srcRoot));
 $it->rewind();
 
 while($it->valid()) {
-    if (!$it->isDot() && !substr_count($it->getSubPathName(), 'Test/')) {
+    if (!$it->isDot() && !strstr($it->getSubPathName(), 'Test/')) {
         $contents = '# FILE: ' . $it->getSubPathName() . PHP_EOL . PHP_EOL;
-        $contents = file_get_contents($it->key());
+        $contents .= file_get_contents($it->key());
         
         if (!$contents) {
-            die('file not found.');
+            die('File not readable.');
         }
         
         $dist .= str_replace('<?php' . PHP_EOL, '', $contents) . PHP_EOL . PHP_EOL;
-        
-        //echo 'SubPathName: ' . $it->getSubPathName() . "\n";
-        //echo 'SubPath:     ' . $it->getSubPath() . "\n";
-        //echo 'Key:         ' . $it->key() . "\n\n";
     }
 
     $it->next();
 }
 
 if (!file_put_contents($distRoot . 'php-budgetmailer-api.php', $dist)) {
-    die('didnt write it.');
+    die('Could not write the output.');
 }

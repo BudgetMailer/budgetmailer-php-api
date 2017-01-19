@@ -1,7 +1,0 @@
-/cache/*
-!/cache/README.md
-/dist/config.php
-/example/config.php
-/nbproject/
-/project/*
-/tests/phpunit.xml
